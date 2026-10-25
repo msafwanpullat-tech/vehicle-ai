@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#070d19">
+    <title>{{ title }} · AI Powered Traffic Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/counting-dashboard.css">
+</head>
+<body class="dashboard-page">
+    <!-- Top Bar Navigation -->
+    <header class="app-header">
+        <div class="header-left">
+            <a class="brand-logo" href="/" aria-label="Traffic Vision Home">
+                <span class="brand-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" class="brand-svg">
+                        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9L2 12v4c0 .6.4 1 1 1h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="7" cy="17" r="2" stroke="currentColor" stroke-width="1.8"/>
+                        <circle cx="17" cy="17" r="2" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M5 12h14M13 7l-2 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <div class="brand-text">
+                    <span class="brand-title">TRAFFIC VISION</span>
+                    <span class="brand-subtitle">AI Powered Traffic Analytics</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="header-center">
+            <div class="search-bar-wrap">
+                <svg class="search-icon" viewBox="0 0 20 20" fill="none">
+                    <path d="M17.5 17.5l-3.8-3.8m1.3-4.7a6 6 0 11-12 0 6 6 0 0112 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <input id="globalSearchInput" type="search" placeholder="Search analysis, vehicle, number plate, or files..." autocomplete="off">
+                <span class="search-hotkey">/</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="system-status-capsule" id="systemStatus" role="status">
+                <span class="status-pulse-dot" aria-hidden="true"></span>
+                <span class="status-model-name">Model Ready</span>
+                <span class="status-divider">|</span>
+                <span class="status-pipeline-text">YOLO11 + ByteTrack + ANPR</span>
+            </div>
+
+            <button class="header-icon-btn" id="notificationsBtn" type="button" aria-label="Notifications">
+                <svg viewBox="0 0 24 24" fill="none" class="header-svg">
+                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="notification-indicator"></span>
+            </button>
+
+            <div class="user-profile-badge">
+                <div class="avatar-circle">
+                    <span>MS</span>
+                </div>
+                <div class="user-meta">
+                    <span class="user-name">Mohd Safvan</span>
+                    <span class="user-role">Administrator</span>
+                </div>
+                <svg viewBox="0 0 16 16" fill="none" class="chevron-svg">
+                    <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <div class="header-time-widget">
+                <span class="live-clock-time" id="liveClockTime">10:24 AM</span>
+                <span class="live-clock-date" id="liveClockDate">Tue, 14 Oct 2026</span>
+            </div>
+
+            <div class="camera-status-pill" title="Hardware feed status">
+                <svg viewBox="0 0 24 24" fill="none" class="cctv-svg">
+                    <path d="M2 13h4M6 13l2-5h9l4 5v3a1 1 0 01-1 1H7a1 1 0 01-1-1v-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                    <circle cx="12" cy="13" r="2.5" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+                <span>AI Cam 01</span>
+                <span class="cam-dot"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout-container">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar" aria-label="Primary navigation">
+            <nav class="sidebar-nav">
+                <a class="nav-item active" href="#dashboard" data-view-link="dashboard">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            <path d="M9 22V12h6v10" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a class="nav-item" href="#new-analysis" id="navNewAnalysisBtn" data-action="new-analysis">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">New Analysis</span>
+                </a>
+                <a class="nav-item" href="#history" data-view-link="history">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M7 8h10M7 12h6M7 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">Analysis History</span>
+                </a>
+                <a class="nav-item" href="#records" id="navVehicleRecordsBtn">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M5 17h14M4 11l2-5h12l2 5M3 11v6a1 1 0 001 1h1M19 18h1a1 1 0 001-1v-6" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            <circle cx="7.5" cy="17.5" r="1.5" fill="currentColor"/>
+                            <circle cx="16.5" cy="17.5" r="1.5" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">Vehicle Records</span>
+                </a>
+                <a class="nav-item" href="#downloads" id="navDownloadsBtn">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">Reports &amp; Downloads</span>
+                </a>
+                <a class="nav-item" href="#settings" id="navSettingsBtn">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.8"/>
+                        </svg>
+                    </span>
+                    <span class="nav-label">Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-promo-card">
+                <div class="promo-content">
+                    <h4 class="promo-title">Smarter Traffic<br>Safer Tomorrow</h4>
+                    <p class="promo-subtitle">AI powered video analytics for intelligent transportation systems.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Shell -->
+        <main class="content-workspace">
+            <!-- DASHBOARD VIEW -->
+            <div id="dashboardView">
+                <!-- Hero Header -->
+                <section class="dashboard-hero-section">
+                    <div class="hero-text-wrap">
+                        <div class="hero-eyebrow-pill">
+                            <span class="pulse-indicator-small"></span>
+                            <span>REAL-TIME AI ANALYTICS</span>
+                        </div>
+                        <h1 class="hero-title">Traffic Analytics <span class="hero-title-accent">&amp; Telemetry</span></h1>
+                        <p class="hero-subtitle">Analyze traffic video, track vehicles, count crossings, and recognize number plates using advanced AI.</p>
+                    </div>
+
+                    <div class="hero-pipeline-badges">
+                        <div class="pipeline-badge-card">
+                            <span class="badge-icon-wrap cyan-glow">
+                                <svg viewBox="0 0 20 20" fill="none"><path d="M4 14h12M3 10l2-4h10l2 4M3 10v4M17 10v4" stroke="currentColor" stroke-width="1.5"/></svg>
+                            </span>
+                            <div class="badge-text">
+                                <strong class="badge-name">YOLO</strong>
+                                <span class="badge-desc">Vehicle Detection</span>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-badge-card">
+                            <span class="badge-icon-wrap purple-glow">
+                                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 3v4M10 13v4M3 10h4M13 10h4" stroke="currentColor" stroke-width="1.5"/></svg>
+                            </span>
+                            <div class="badge-text">
+                                <strong class="badge-name">ByteTrack</strong>
+                                <span class="badge-desc">Object Tracking</span>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-badge-card">
+                            <span class="badge-icon-wrap blue-glow">
+                                <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="6" width="14" height="8" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 10h6" stroke="currentColor" stroke-width="1.5"/></svg>
+                            </span>
+                            <div class="badge-text">
+                                <strong class="badge-name">ANPR</strong>
+                                <span class="badge-desc">Number Plate Recognition</span>
+                            </div>
+                        </div>
+
+                        <div class="pipeline-badge-card">
+                            <span class="badge-icon-wrap green-glow">
+                                <svg viewBox="0 0 20 20" fill="none"><path d="M3 13l4-5 4 3 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M13 4h4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            </span>
+                            <div class="badge-text">
+                                <strong class="badge-name">Real-time</strong>
+                                <span class="badge-desc">Traffic Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Top 4 KPI Metrics Grid -->
+                <section class="kpi-metrics-grid" aria-label="Key Performance Indicators">
+                    <!-- KPI 1: Total Tracked Vehicles -->
+                    <article class="kpi-card card-cyan">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-bubble bubble-cyan">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9L2 12v4c0 .6.4 1 1 1h2" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="17" r="2" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="17" r="2" stroke="currentColor" stroke-width="1.8"/></svg>
+                            </div>
+                            <div class="kpi-meta">
+                                <span class="kpi-title">Total Tracked Vehicles</span>
+                                <div class="kpi-value-row">
+                                    <span class="kpi-number" id="statTotalVehicles">1,642</span>
+                                    <span class="kpi-trend trend-up">↑ 12%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="kpi-footer-text">Across the analyzed video</span>
+                        </div>
+                        <div class="kpi-accent-glow glow-cyan">
+                            <svg viewBox="0 0 240 20" fill="none" preserveAspectRatio="none">
+                                <path d="M0 12 Q 60 2, 120 12 T 240 12" stroke="#00f2fe" stroke-width="2.5" fill="none" filter="drop-shadow(0 0 6px #00f2fe)"/>
+                            </svg>
+                        </div>
+                    </article>
+
+                    <!-- KPI 2: Tracked Line Crossings -->
+                    <article class="kpi-card card-purple">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-bubble bubble-purple">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 19l-7-7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                            <div class="kpi-meta">
+                                <span class="kpi-title">Tracked Line Crossings</span>
+                                <div class="kpi-value-row">
+                                    <span class="kpi-number" id="totalCount">1,298</span>
+                                    <span class="kpi-trend trend-up">↑ 8%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="kpi-footer-text">Vehicles crossed the counting line</span>
+                        </div>
+                        <div class="kpi-accent-glow glow-purple">
+                            <svg viewBox="0 0 240 20" fill="none" preserveAspectRatio="none">
+                                <path d="M0 12 Q 60 2, 120 12 T 240 12" stroke="#c084fc" stroke-width="2.5" fill="none" filter="drop-shadow(0 0 6px #c084fc)"/>
+                            </svg>
+                        </div>
+                    </article>
+
+                    <!-- KPI 3: Unique Number Plates -->
+                    <article class="kpi-card card-blue">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-bubble bubble-blue">
+                                <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 12h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="5" cy="8" r="0.5" fill="currentColor"/><circle cx="19" cy="8" r="0.5" fill="currentColor"/></svg>
+                            </div>
+                            <div class="kpi-meta">
+                                <span class="kpi-title">Unique Number Plates</span>
+                                <div class="kpi-value-row">
+                                    <span class="kpi-number" id="statUniquePlates">876</span>
+                                    <span class="kpi-trend trend-up">↑ 5%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="kpi-footer-text">Distinct vehicles identified</span>
+                        </div>
+                        <div class="kpi-accent-glow glow-blue">
+                            <svg viewBox="0 0 240 20" fill="none" preserveAspectRatio="none">
+                                <path d="M0 12 Q 60 2, 120 12 T 240 12" stroke="#38bdf8" stroke-width="2.5" fill="none" filter="drop-shadow(0 0 6px #38bdf8)"/>
+                            </svg>
+                        </div>
+                    </article>
+
+                    <!-- KPI 4: Avg. Processing Speed -->
+                    <article class="kpi-card card-teal">
+                        <div class="kpi-header">
+                            <div class="kpi-icon-bubble bubble-teal">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                            </div>
+                            <div class="kpi-meta">
+                                <span class="kpi-title">Avg. Processing Speed</span>
+                                <div class="kpi-value-row">
+                                    <span class="kpi-number" id="statProcessingSpeed">26 FPS</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="kpi-footer-text">Real-time inference</span>
+                        </div>
+                        <div class="kpi-accent-glow glow-teal">
+                            <svg viewBox="0 0 240 20" fill="none" preserveAspectRatio="none">
+                                <path d="M0 12 Q 60 2, 120 12 T 240 12" stroke="#34d399" stroke-width="2.5" fill="none" filter="drop-shadow(0 0 6px #34d399)"/>
+                            </svg>
+                        </div>
+                    </article>
+                </section>
+
+                <!-- Video Upload / New Analysis Panel (Collapsible / Modal) -->
+                <section class="ui-panel upload-drawer" id="newAnalysisSection" aria-labelledby="uploadHeading">
+                    <div class="panel-header-row">
+                        <div class="panel-header-left">
+                            <span class="panel-tag">NEW ANALYSIS</span>
+                            <h2 class="panel-main-title" id="uploadHeading">Process a traffic video</h2>
+                        </div>
+                        <div class="panel-header-actions">
+                            <span class="chip-badge">Custom vehicle model</span>
+                            <button class="secondary-btn close-panel-btn" id="closeUploadDrawerBtn" type="button" aria-label="Minimize upload panel">−</button>
+                        </div>
+                    </div>
+
+                    <form id="uploadForm" class="upload-form-body">
+                        <label class="modern-dropzone" id="dropZone" for="videoInput">
+                            <div class="dropzone-icon-ring">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 16V4m0 0L7 9m5-5 5 5M5 15v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <h3 class="dropzone-primary-text drop-title">Choose a video or drop it here</h3>
+                            <p class="dropzone-secondary-text drop-hint">MP4, AVI, MOV, MKV, or WEBM · up to 500 MB</p>
+                            <input id="videoInput" name="file" type="file" accept=".mp4,.avi,.mov,.mkv,.webm,video/mp4,video/x-msvideo,video/quicktime,video/x-matroska,video/webm">
+                        </label>
+
+                        <div class="selected-file-chip hidden" id="selectedFileRow">
+                            <div class="file-chip-info">
+                                <svg viewBox="0 0 24 24" fill="none" class="file-icon-svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6" stroke="currentColor" stroke-width="1.8"/></svg>
+                                <span class="selected-filename" id="selectedFile">No file chosen</span>
+                            </div>
+                            <button class="chip-action-btn" id="changeVideoButton" type="button">Change video</button>
+                        </div>
+
+                        <div class="upload-controls-grid">
+                            <div class="line-slider-wrap">
+                                <div class="slider-header-row">
+                                    <label class="slider-label" for="linePosition">Counting line position</label>
+                                    <output class="slider-value-pill" id="linePositionValue" for="linePosition">55.6%</output>
+                                </div>
+                                <input id="linePosition" name="line_position_percent" type="range" min="10" max="90" step="0.1" value="55.6">
+                                <span class="slider-helper-text">Measured from top of frame. Position line across the road for accurate vehicle crossing triggers.</span>
+                            </div>
+
+                            <button class="primary-gradient-btn" id="processButton" type="submit" disabled>
+                                <svg viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span>Analyze Video</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Processing Progress Indicator -->
+                    <div class="processing-status-card hidden" id="processingState" aria-live="polite">
+                        <div class="processing-spinner-row">
+                            <div class="cyber-spinner" aria-hidden="true"></div>
+                            <div class="processing-labels">
+                                <strong class="processing-message" id="processingMessage">Uploading video…</strong>
+                                <span class="processing-subtext">YOLO11 object detection and ANPR running locally on CPU...</span>
+                            </div>
+                        </div>
+                        <progress class="cyber-progress-bar" id="uploadProgress" max="100" value="0">0%</progress>
+                    </div>
+
+                    <div class="cyber-alert error-alert hidden" id="errorMessage" role="alert"></div>
+                </section>
+
+                <!-- Main Analytics Display (2-Column Grid) -->
+                <div class="analytics-workspace-grid" id="resultsSection">
+                    <!-- LEFT COLUMN (62%): Video Analysis & Recognized Plates Gallery -->
+                    <div class="workspace-col-left">
+                        <!-- Card 1: Video Analysis Player -->
+                        <section class="ui-panel video-analysis-panel" aria-labelledby="videoAnalysisHeading">
+                            <div class="panel-header-row">
+                                <div class="panel-header-left">
+                                    <span class="panel-icon-cyan">
+                                        <svg viewBox="0 0 24 24" fill="none"><polygon points="5 3 19 12 5 21 5 3" stroke="currentColor" stroke-width="2" fill="currentColor"/></svg>
+                                    </span>
+                                    <h3 class="panel-main-title" id="videoAnalysisHeading">Video Analysis</h3>
+                                </div>
+                                <div class="panel-header-actions">
+                                    <button class="secondary-btn-pill" id="changeVideoTopBtn" type="button">
+                                        <svg viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1111.3 2.7M14 2v6H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span>Change Video</span>
+                                    </button>
+                                    <a class="secondary-btn-pill" id="sourceVideoLink" href="#" target="_blank" rel="noopener">
+                                        <span>View Original</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="video-player-container">
+                                <!-- Top Video HUD Badges -->
+                                <div class="video-hud-overlay">
+                                    <span class="hud-pill" id="hudFps">FPS: 26</span>
+                                    <span class="hud-pill" id="hudFrameInfo">Frame: 384 | 1920x1080</span>
+                                </div>
+
+                                <!-- Counting line visual badge -->
+                                <div class="counting-line-indicator-overlay">
+                                    <span class="counting-line-tag">Counting Line (<span id="resultLinePosition">55.6%</span>)</span>
+                                </div>
+
+                                <video id="processedVideo" controls playsinline preload="metadata">
+                                    Your browser does not support HTML5 video.
+                                </video>
+                                <span class="hidden" id="resultFilename">—</span>
+                            </div>
+                        </section>
+
+                        <!-- Card 2: Recognized Number Plates -->
+                        <section class="ui-panel plates-analysis-panel" aria-labelledby="platesHeading">
+                            <div class="panel-header-row">
+                                <div class="panel-header-left">
+                                    <span class="panel-icon-cyan">
+                                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2"/><path d="M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                    </span>
+                                    <h3 class="panel-main-title" id="platesHeading">Recognized Number Plates</h3>
+                                </div>
+                                <div class="panel-header-actions">
+                                    <span class="anpr-live-badge" id="anprStatus">OCR Processed</span>
+                                    <button class="secondary-btn-pill" id="viewAllPlatesBtn" type="button">
+                                        <span>View Table &amp; Search</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Carousel / Grid of Plate Visual Cards -->
+                            <div class="plate-cards-carousel" id="plateCardsGallery">
+                                <!-- Dynamically populated by JS; initial template cards for instant preview -->
+                                <div class="plate-visual-card">
+                                    <div class="plate-crop-thumbnail">
+                                        <img src="/outputs/counting/analysis_1c86c9c71a7541a5800064a6022ff1c8/frame_000063_track_22_plate.jpg" alt="License Plate Crop" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'180\' height=\'90\' viewBox=\'0 0 180 90\'><rect width=\'180\' height=\'90\' fill=\'%230e1c31\'/><text x=\'50%25\' y=\'50%25\' fill=\'%2338bdf8\' font-size=\'12\' text-anchor=\'middle\' dominant-baseline=\'middle\'>Plate Crop</text></svg>'">
+                                    </div>
+                                    <div class="plate-card-body">
+                                        <div class="plate-badge-neon">
+                                            <span>MH 04 LO 1733</span>
+                                        </div>
+                                        <div class="plate-card-meta">
+                                            <span>Car · 77.9% · 00:00:02</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="plate-visual-card">
+                                    <div class="plate-crop-thumbnail">
+                                        <img src="/outputs/counting/analysis_1c86c9c71a7541a5800064a6022ff1c8/frame_000045_track_16_plate.jpg" alt="License Plate Crop" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'180\' height=\'90\' viewBox=\'0 0 180 90\'><rect width=\'180\' height=\'90\' fill=\'%230e1c31\'/><text x=\'50%25\' y=\'50%25\' fill=\'%2338bdf8\' font-size=\'12\' text-anchor=\'middle\' dominant-baseline=\'middle\'>Plate Crop</text></svg>'">
+                                    </div>
+                                    <div class="plate-card-body">
+                                        <div class="plate-badge-neon">
+                                            <span>MH 04 LD 253</span>
+                                        </div>
+                                        <div class="plate-card-meta">
+                                            <span>Bus · 67.6% · 00:00:01</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="plate-visual-card">
+                                    <div class="plate-crop-thumbnail">
+                                        <img src="/outputs/counting/analysis_1c86c9c71a7541a5800064a6022ff1c8/frame_000076_track_6_plate.jpg" alt="License Plate Crop" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'180\' height=\'90\' viewBox=\'0 0 180 90\'><rect width=\'180\' height=\'90\' fill=\'%230e1c31\'/><text x=\'50%25\' y=\'50%25\' fill=\'%2338bdf8\' font-size=\'12\' text-anchor=\'middle\' dominant-baseline=\'middle\'>Plate Crop</text></svg>'">
+                                    </div>
+                                    <div class="plate-card-body">
+                                        <div class="plate-badge-neon plate-yellow">
+                                            <span>KL 15 D 9012</span>
+                                        </div>
+                                        <div class="plate-card-meta">
+                                            <span>Bus · 74.5% · 00:00:03</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="plate-visual-card">
+                                    <div class="plate-crop-thumbnail">
+                                        <img src="/outputs/counting/analysis_1c86c9c71a7541a5800064a6022ff1c8/frame_000113_track_29_plate.jpg" alt="License Plate Crop" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'180\' height=\'90\' viewBox=\'0 0 180 90\'><rect width=\'180\' height=\'90\' fill=\'%230e1c31\'/><text x=\'50%25\' y=\'50%25\' fill=\'%2338bdf8\' font-size=\'12\' text-anchor=\'middle\' dominant-baseline=\'middle\'>Plate Crop</text></svg>'">
+                                    </div>
+                                    <div class="plate-card-body">
+                                        <div class="plate-badge-neon">
+                                            <span>KL 41 F 3345</span>
+                                        </div>
+                                        <div class="plate-card-meta">
+                                            <span>Motorbike · 81.2% · 00:00:04</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Detailed Table Drawer (Collapsible) -->
+                            <div class="plate-table-drawer hidden" id="plateTableDrawer">
+                                <div class="plate-filter-controls">
+                                    <div class="filter-search-box">
+                                        <input id="plateSearchInput" type="search" placeholder="Search plate, class, or vehicle ID" autocomplete="off">
+                                    </div>
+                                    <div class="filter-select-box">
+                                        <select id="plateStatusFilter">
+                                            <option value="all">All statuses</option>
+                                            <option value="recognized">Recognized</option>
+                                            <option value="uncertain">Uncertain</option>
+                                            <option value="unreadable">Unreadable</option>
+                                        </select>
+                                    </div>
+                                    <span class="plate-count-badge" id="plateResultCount" aria-live="polite"></span>
+                                </div>
+
+                                <div class="modern-table-wrapper">
+                                    <table class="cyber-data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Vehicle ID</th>
+                                                <th>Vehicle Class</th>
+                                                <th>Plate Text</th>
+                                                <th>Status</th>
+                                                <th>Confidence</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="plateResultsBody"></tbody>
+                                    </table>
+                                </div>
+                                <p class="table-empty-msg hidden" id="plateEmptyState">No plate results match the current filters.</p>
+                                <button class="secondary-btn show-more-btn hidden" id="showMorePlatesButton" type="button">Show more results</button>
+                                <p class="table-helper-text" id="plateMessage" aria-live="polite"></p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- RIGHT COLUMN (38%): Chart, Overview, Downloads -->
+                    <div class="workspace-col-right">
+                        <!-- Card 1: Vehicle Count by Class (Interactive Bar Chart) -->
+                        <section class="ui-panel class-chart-panel" aria-labelledby="classChartHeading">
+                            <div class="panel-header-row">
+                                <div class="panel-header-left">
+                                    <span class="panel-icon-cyan">
+                                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="12" width="4" height="9" rx="1" fill="currentColor"/><rect x="10" y="4" width="4" height="17" rx="1" fill="currentColor"/><rect x="17" y="8" width="4" height="13" rx="1" fill="currentColor"/></svg>
+                                    </span>
+                                    <h3 class="panel-main-title" id="classChartHeading">Vehicle Count by Class</h3>
+                                </div>
+                                <div class="panel-header-actions">
+                                    <select class="chart-view-toggle" id="chartViewToggle">
+                                        <option value="chart">Bar Chart ▾</option>
+                                        <option value="table">Table View ▾</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Bar Chart Visual Canvas -->
+                            <div class="bar-chart-container" id="barChartContainer">
+                                <div class="chart-y-axis">
+                                    <span>500</span>
+                                    <span>400</span>
+                                    <span>300</span>
+                                    <span>200</span>
+                                    <span>100</span>
+                                    <span>0</span>
+                                </div>
+                                <div class="chart-bars-track" id="vehicleClassBarChart">
+                                    <!-- Rendered dynamically by JavaScript -->
+                                    <div class="chart-col">
+                                        <span class="bar-value-label">421</span>
+                                        <div class="bar-fill" style="height: 84%;"></div>
+                                        <span class="bar-class-name">Car</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <span class="bar-value-label">98</span>
+                                        <div class="bar-fill" style="height: 20%;"></div>
+                                        <span class="bar-class-name">Bus</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <span class="bar-value-label">67</span>
+                                        <div class="bar-fill" style="height: 14%;"></div>
+                                        <span class="bar-class-name">Truck</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <span class="bar-value-label">230</span>
+                                        <div class="bar-fill" style="height: 46%;"></div>
+                                        <span class="bar-class-name">Motorbike</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <span class="bar-value-label">54</span>
+                                        <div class="bar-fill" style="height: 11%;"></div>
+                                        <span class="bar-class-name">Van</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <span class="bar-value-label">43</span>
+                                        <div class="bar-fill" style="height: 9%;"></div>
+                                        <span class="bar-class-name">Auto Rickshaw</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <span class="bar-value-label">18</span>
+                                        <div class="bar-fill" style="height: 4%;"></div>
+                                        <span class="bar-class-name">Bicycle</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <span class="bar-value-label">12</span>
+                                        <div class="bar-fill" style="height: 3%;"></div>
+                                        <span class="bar-class-name">Others</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Table view for vehicle class breakdown (Toggleable) -->
+                            <div class="class-table-view hidden" id="classTableView">
+                                <div class="modern-table-wrapper">
+                                    <table class="cyber-data-table">
+                                        <thead>
+                                            <tr><th>Vehicle Class</th><th class="text-right">Count</th></tr>
+                                        </thead>
+                                        <tbody id="classCountsBody"></tbody>
+                                    </table>
+                                </div>
+                                <details class="zero-counts-details hidden" id="otherClassesDetails">
+                                    <summary id="otherClassesSummary">Vehicle classes with zero crossings (0)</summary>
+                                    <table class="cyber-data-table">
+                                        <tbody id="zeroClassCountsBody"></tbody>
+                                    </table>
+                                </details>
+                            </div>
+                        </section>
+
+                        <!-- Card 2: Detection Overview (2x2 Grid) -->
+                        <section class="ui-panel overview-panel" aria-labelledby="overviewHeading">
+                            <div class="panel-header-row">
+                                <div class="panel-header-left">
+                                    <span class="panel-icon-cyan">
+                                        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+                                    </span>
+                                    <h3 class="panel-main-title" id="overviewHeading">Detection Overview</h3>
+                                </div>
+                                <div class="panel-header-actions">
+                                    <span class="chip-badge-sm">This Video ▾</span>
+                                </div>
+                            </div>
+
+                            <div class="overview-grid-2x2">
+                                <div class="overview-tile tile-blue">
+                                    <div class="overview-tile-icon icon-blue">
+                                        <svg viewBox="0 0 24 24" fill="none"><path d="M5 17h14M4 11l2-5h12l2 5M3 11v6a1 1 0 001 1h1M19 18h1a1 1 0 001-1v-6" stroke="currentColor" stroke-width="1.8"/><circle cx="7.5" cy="17.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="17.5" r="1.5" fill="currentColor"/></svg>
+                                    </div>
+                                    <span class="overview-tile-label">Vehicles Detected</span>
+                                    <strong class="overview-tile-value" id="overviewVehicles">1,642</strong>
+                                </div>
+
+                                <div class="overview-tile tile-purple">
+                                    <div class="overview-tile-icon icon-purple">
+                                        <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7M12 19l-7-7 7-7" stroke="currentColor" stroke-width="1.8"/></svg>
+                                    </div>
+                                    <span class="overview-tile-label">Line Crossings</span>
+                                    <strong class="overview-tile-value" id="overviewCrossings">1,298</strong>
+                                </div>
+
+                                <div class="overview-tile tile-green">
+                                    <div class="overview-tile-icon icon-green">
+                                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 12h10" stroke="currentColor" stroke-width="1.8"/></svg>
+                                    </div>
+                                    <span class="overview-tile-label">Plates Recognized</span>
+                                    <strong class="overview-tile-value" id="overviewPlates">876</strong>
+                                </div>
+
+                                <div class="overview-tile tile-amber">
+                                    <div class="overview-tile-icon icon-amber">
+                                        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                                    </div>
+                                    <span class="overview-tile-label">Analysis Time</span>
+                                    <strong class="overview-tile-value" id="overviewTime">02:34</strong>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Card 3: Downloads Panel -->
+                        <section class="ui-panel downloads-panel" id="downloadsSection" aria-labelledby="downloadsHeading">
+                            <div class="panel-header-row">
+                                <div class="panel-header-left">
+                                    <span class="panel-icon-cyan">
+                                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </span>
+                                    <h3 class="panel-main-title" id="downloadsHeading">Downloads</h3>
+                                </div>
+                            </div>
+
+                            <!-- Category Tabs -->
+                            <div class="download-tabs-nav">
+                                <button class="dtab-btn active" type="button" data-tab="reports">Reports &amp; Data</button>
+                                <button class="dtab-btn" type="button" data-tab="media">Video &amp; Images</button>
+                                <button class="dtab-btn" type="button" data-tab="snapshots">Snapshots</button>
+                            </div>
+
+                            <!-- Tab 1: Reports & Data -->
+                            <div class="dtab-content active" id="tabContentReports">
+                                <div class="download-buttons-grid">
+                                    <button class="download-action-btn btn-green export-button" type="button" data-export-type="csv">
+                                        <div class="action-btn-icon bg-green-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8"/><path d="M14 2v6h6M8 13h8M8 17h8" stroke="currentColor" stroke-width="1.8"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download CSV</strong>
+                                            <span class="action-btn-sub">Tabular Data</span>
+                                        </div>
+                                    </button>
+
+                                    <button class="download-action-btn btn-emerald export-button" type="button" data-export-type="excel">
+                                        <div class="action-btn-icon bg-emerald-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M9 4v16M15 4v16" stroke="currentColor" stroke-width="1.8"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download Excel</strong>
+                                            <span class="action-btn-sub">Analysis Report</span>
+                                        </div>
+                                    </button>
+
+                                    <button class="download-action-btn btn-red export-button" type="button" data-export-type="pdf">
+                                        <div class="action-btn-icon bg-red-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="15" r="2" stroke="currentColor" stroke-width="1.8"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download PDF</strong>
+                                            <span class="action-btn-sub">Detailed Report</span>
+                                        </div>
+                                    </button>
+
+                                    <button class="download-action-btn btn-purple export-button" type="button" data-export-type="zip">
+                                        <div class="action-btn-icon bg-purple-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4z" stroke="currentColor" stroke-width="1.8"/><path d="M12 4v16M10 8h4M10 12h4M10 16h4" stroke="currentColor" stroke-width="1.8"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download All Results</strong>
+                                            <span class="action-btn-sub">(ZIP)</span>
+                                        </div>
+                                    </button>
+                                </div>
+
+                                <div class="download-buttons-grid media-row">
+                                    <a class="download-action-btn btn-blue" id="downloadLink" href="#" download>
+                                        <div class="action-btn-icon bg-blue-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><polygon points="6 4 18 12 6 20 6 4" stroke="currentColor" stroke-width="2" fill="currentColor"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download Annotated Video</strong>
+                                        </div>
+                                    </a>
+
+                                    <button class="download-action-btn btn-purple export-button" type="button" data-export-type="vehicles">
+                                        <div class="action-btn-icon bg-purple-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.8"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download Vehicle Screenshots</strong>
+                                        </div>
+                                    </button>
+
+                                    <button class="download-action-btn btn-cyan export-button" type="button" data-export-type="plates">
+                                        <div class="action-btn-icon bg-cyan-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="12" r="1" fill="currentColor"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download Number Plate Crops</strong>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Tab 2: Video & Images -->
+                            <div class="dtab-content hidden" id="tabContentMedia">
+                                <div class="download-buttons-grid">
+                                    <a class="download-action-btn btn-blue video-download-btn" id="downloadLinkMedia" href="#" download>
+                                        <div class="action-btn-icon bg-blue-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><polygon points="6 4 18 12 6 20 6 4" stroke="currentColor" stroke-width="2" fill="currentColor"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download Annotated Video</strong>
+                                            <span class="action-btn-sub">MP4 with Overlays</span>
+                                        </div>
+                                    </a>
+
+                                    <button class="download-action-btn btn-purple export-button" type="button" data-export-type="vehicles">
+                                        <div class="action-btn-icon bg-purple-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.8"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download Vehicle Screenshots</strong>
+                                            <span class="action-btn-sub">All Tracked Vehicles</span>
+                                        </div>
+                                    </button>
+
+                                    <button class="download-action-btn btn-cyan export-button" type="button" data-export-type="plates">
+                                        <div class="action-btn-icon bg-cyan-tint">
+                                            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="12" r="1" fill="currentColor"/><circle cx="17" cy="12" r="1" fill="currentColor"/></svg>
+                                        </div>
+                                        <div class="action-btn-text">
+                                            <strong class="action-btn-title">Download Plate Crops</strong>
+                                            <span class="action-btn-sub">Cropped License Plates</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Tab 3: Snapshots -->
+                            <div class="dtab-content hidden" id="tabContentSnapshots">
+                                <div class="snapshot-tab-body">
+                                    <p class="snapshot-help">Search or inspect exact vehicle timestamps and snapshots directly from the database.</p>
+                                    <button class="secondary-btn-pill" id="jumpToLookupBtn" type="button">Go to Registration Lookup</button>
+                                </div>
+                            </div>
+
+                            <p class="export-feedback" id="exportMessage" role="status" aria-live="polite"></p>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Vehicle Registration Lookup Modal / Section -->
+                <section class="ui-panel vehicle-search-section hidden" id="vehicleSearchSection" aria-labelledby="vehicleSearchHeading">
+                    <div class="panel-header-row">
+                        <div class="panel-header-left">
+                            <span class="panel-icon-cyan">
+                                <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            </span>
+                            <h3 class="panel-main-title" id="vehicleSearchHeading">Search Vehicle by Registration Number</h3>
+                        </div>
+                        <button class="secondary-btn close-panel-btn" id="closeVehicleSearchBtn" type="button" aria-label="Close search">×</button>
+                    </div>
+
+                    <form id="vehicleSearchForm" class="vehicle-search-form">
+                        <div class="search-input-group">
+                            <input
+                                id="registrationSearchInput"
+                                name="registration_number"
+                                type="text"
+                                maxlength="32"
+                                autocomplete="off"
+                                autocapitalize="characters"
+                                placeholder="e.g. MH04LO1733 or KL07AB1234"
+                                aria-label="Enter vehicle registration number"
+                                required
+                            >
+                            <button class="primary-gradient-btn" id="searchVehicleButton" type="submit">
+                                <span>Search</span>
+                            </button>
+                        </div>
+                        <p class="search-hint-text" id="registrationSearchHint">Searches this analysis. Letter cases, spaces, and hyphens are automatically normalized.</p>
+                    </form>
+
+                    <p class="search-feedback" id="vehicleSearchMessage" role="status" aria-live="polite"></p>
+                    <div class="vehicle-search-results-grid" id="vehicleSearchResults"></div>
+                </section>
+            </div>
+
+            <!-- ANALYSIS HISTORY VIEW -->
+            <section class="history-view-container hidden" id="historyView" aria-labelledby="historyViewHeading">
+                <div class="history-view-header">
+                    <div class="history-header-titles">
+                        <span class="hero-eyebrow-pill">SAVED SESSIONS</span>
+                        <h2 class="hero-title" id="historyViewHeading">Analysis History</h2>
+                    </div>
+                    <span class="history-count-pill" id="historyTotal" aria-live="polite"></span>
+                </div>
+
+                <!-- History Filter Panel -->
+                <div class="ui-panel history-filters-panel">
+                    <form id="historyFilterForm" class="history-filter-grid">
+                        <div class="filter-field">
+                            <label for="historySearch">Video filename</label>
+                            <input id="historySearch" type="search" maxlength="255" placeholder="Search filename">
+                        </div>
+                        <div class="filter-field">
+                            <label for="historyStatus">Status</label>
+                            <select id="historyStatus">
+                                <option value="all">All statuses</option>
+                                <option value="completed">Completed</option>
+                                <option value="processing">Processing</option>
+                                <option value="failed">Failed</option>
+                            </select>
+                        </div>
+                        <div class="filter-field">
+                            <label for="historyDateFrom">From date</label>
+                            <input id="historyDateFrom" type="date">
+                        </div>
+                        <div class="filter-field">
+                            <label for="historyDateTo">To date</label>
+                            <input id="historyDateTo" type="date">
+                        </div>
+                        <div class="filter-field">
+                            <label for="historySort">Sort order</label>
+                            <select id="historySort">
+                                <option value="newest">Newest first</option>
+                                <option value="oldest">Oldest first</option>
+                            </select>
+                        </div>
+                        <div class="filter-action-wrap">
+                            <button class="primary-gradient-btn" type="submit">Apply Filters</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="history-cards-grid" id="historyList" aria-live="polite"></div>
+                <p class="table-empty-msg hidden" id="historyEmptyState">No saved analyses match these filters.</p>
+                <p class="cyber-alert error-alert hidden" id="historyError" role="alert"></p>
+
+                <div class="history-pagination-row">
+                    <button class="secondary-btn-pill" id="historyPrevious" type="button">Previous</button>
+                    <span class="history-page-indicator" id="historyPageLabel" aria-live="polite">Page 1</span>
+                    <button class="secondary-btn-pill" id="historyNext" type="button">Next</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Script assets -->
+    <script src="/static/js/counting-dashboard.js" defer></script>
+</body>
+</html>

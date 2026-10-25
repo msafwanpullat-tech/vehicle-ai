@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vehicle Detection, OCR & Analytics System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Navbar -->
+        <header class="navbar">
+            <div class="brand">
+                <div class="brand-logo">🚘</div>
+                <div>
+                    <h1>AI Vehicle Analysis System</h1>
+                    <span class="phase-badge">Phase 4: License Plate OCR & Search</span>
+                </div>
+            </div>
+            <div class="system-status" id="systemStatus">
+                <span class="status-dot online"></span> CPU Inference Mode | YOLO11n + ByteTrack + OCR
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="content">
+            <!-- Upload & Settings Section -->
+            <section class="card upload-card">
+                <h2>Upload Traffic Video & Configure Settings</h2>
+                <p class="subtitle">Upload a traffic/CCTV video clip to run vehicle tracking, line counting, and license plate OCR recognition.</p>
+                
+                <form id="uploadForm" class="upload-form">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-icon">📹</div>
+                        <p class="drop-title">Drag & drop traffic video here</p>
+                        <p class="drop-subtitle">or click to browse files</p>
+                        <input type="file" id="videoInput" accept="video/mp4,video/x-m4v,video/*" hidden>
+                        <div id="fileInfo" class="file-info hidden">
+                            <span class="file-name" id="fileName">video.mp4</span>
+                            <span class="file-size" id="fileSize">0 MB</span>
+                        </div>
+                    </div>
+
+                    <!-- Config Bar -->
+                    <div class="config-bar">
+                        <label for="lineRatioSelect" class="config-label">
+                            📏 Virtual Counting Line Position:
+                        </label>
+                        <select id="lineRatioSelect" class="config-select">
+                            <option value="0.3">30% Frame Height (Top)</option>
+                            <option value="0.4">40% Frame Height</option>
+                            <option value="0.5" selected>50% Frame Height (Middle - Default)</option>
+                            <option value="0.6">60% Frame Height</option>
+                            <option value="0.7">70% Frame Height (Bottom)</option>
+                        </select>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" id="processBtn" class="btn btn-primary" disabled>
+                            <span class="btn-text">🚀 Run Full AI Vehicle Analysis & OCR</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Processing Progress Spinner -->
+                <div id="processingState" class="processing-state hidden">
+                    <div class="spinner"></div>
+                    <div class="processing-info">
+                        <h3>Running YOLO Detection, ByteTrack & License Plate OCR...</h3>
+                        <p>Scanning vehicles, calculating line crossings, and reading license plates. Please wait.</p>
+                    </div>
+                </div>
+                
+                <!-- Error Alert Box -->
+                <div id="errorMessage" class="error-alert hidden"></div>
+            </section>
+
+            <!-- Search Section -->
+            <section class="card search-card">
+                <h2>🔍 Search Vehicle by Registration Number</h2>
+                <p class="subtitle">Search processed traffic records for a specific license plate number (e.g., KL07AB1234 or partial match).</p>
+                
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Enter Registration Number (e.g. KL07AB1234)...">
+                    <button id="searchBtn" class="btn btn-primary">🔍 Search</button>
+                </div>
+
+                <div id="searchResults" class="search-results-container hidden"></div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="resultsSection" class="results-section hidden">
+                <div class="grid-layout">
+                    <!-- Left: Video Player -->
+                    <div class="card video-card">
+                        <div class="card-header">
+                            <h2>AI Output Video with Tracking & OCR Badges</h2>
+                            <div class="tab-group">
+                                <button class="tab-btn active" data-target="processedVideo">AI Processed Output</button>
+                                <button class="tab-btn" data-target="originalVideo">Original Video</button>
+                            </div>
+                        </div>
+
+                        <div class="video-container">
+                            <video id="processedVideo" controls class="video-player">
+                                <source src="" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <video id="originalVideo" controls class="video-player hidden">
+                                <source src="" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
+
+                    <!-- Right: Analytics Dashboard -->
+                    <div class="card analytics-card">
+                        <h2>Vehicle Analysis & Counting Summary</h2>
+
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <span class="metric-label">Total Line Crossings</span>
+                                <span class="metric-value highlight" id="statLineCrossings">0</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-label">Directional IN / OUT</span>
+                                <span class="metric-value" id="statDirectional">IN: 0 | OUT: 0</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-label">Unique Vehicles Tracked</span>
+                                <span class="metric-value" id="statUniqueVehicles">0</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-label">Inference Speed</span>
+                                <span class="metric-value" id="statFps">0 FPS</span>
+                            </div>
+                        </div>
+
+                        <h3 class="section-title">Class-Wise Line Counts</h3>
+                        <div class="class-counts-grid">
+                            <div class="class-card car">
+                                <div class="class-header">
+                                    <span class="class-icon">🚗</span>
+                                    <span class="class-name">Cars</span>
+                                </div>
+                                <span class="class-count" id="countCar">0</span>
+                            </div>
+
+                            <div class="class-card motorcycle">
+                                <div class="class-header">
+                                    <span class="class-icon">🏍️</span>
+                                    <span class="class-name">Motorcycles</span>
+                                </div>
+                                <span class="class-count" id="countMotorcycle">0</span>
+                            </div>
+
+                            <div class="class-card bus">
+                                <div class="class-header">
+                                    <span class="class-icon">🚌</span>
+                                    <span class="class-name">Buses</span>
+                                </div>
+                                <span class="class-count" id="countBus">0</span>
+                            </div>
+
+                            <div class="class-card truck">
+                                <div class="class-header">
+                                    <span class="class-icon">🚛</span>
+                                    <span class="class-name">Trucks</span>
+                                </div>
+                                <span class="class-count" id="countTruck">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recognized License Plates Table Card -->
+                <div class="card table-card" style="margin-top: 24px;">
+                    <h2>Detected License Plates & OCR Records</h2>
+                    <p class="subtitle">Recognized registration numbers associated with persistent vehicle tracking IDs.</p>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Vehicle ID</th>
+                                    <th>Vehicle Type</th>
+                                    <th>Registration Number</th>
+                                    <th>OCR Confidence</th>
+                                    <th>Timestamp</th>
+                                    <th>Plate Crop</th>
+                                </tr>
+                            </thead>
+                            <tbody id="platesTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center">No license plates recognized yet. Process a video above.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Academic Project — AI Vehicle Detection, Classification, Counting & License Plate OCR System</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

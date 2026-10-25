@@ -1,0 +1,30 @@
+# Environment & Virtual Environments
+.env
+.venv/
+venv/
+ENV/
+
+# Python cache & build
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Local databases & logs
+*.db
+*.sqlite3
+vehicle_ai.db
+*.log
+
+# Heavy runtime output directories
+outputs/
+.analysis_sessions/
+.analysis_backups/
+.anpr_debug/
+runs/
+uploads/
+debug_output/
+
+# Temporary zip archives
+*.zip
+*.tar.gz
